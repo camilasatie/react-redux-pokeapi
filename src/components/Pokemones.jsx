@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
-import { Button } from '@material-ui/core';
+import { Container, Button, List, ListItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Favorite from '@material-ui/icons/Favorite';
 
@@ -8,7 +8,11 @@ import Favorite from '@material-ui/icons/Favorite';
 import { useDispatch, useSelector } from 'react-redux';
 
 // importamos a ação
-import { obtenerPokemonesAccion } from '../redux/pokeDucks';
+import {
+  obtenerPokemonesAccion,
+  siguientePokemonAccion,
+  anteriorPokemonAccion,
+} from '../redux/pokeDucks';
 
 // Estilo personalizado do botão
 const useStyle = makeStyles({
@@ -27,27 +31,51 @@ const Pokemones = () => {
   const classes = useStyle();
   const dispatch = useDispatch();
 
-  const pokemones = useSelector((store) => store.pokemones.array);
+  const pokemones = useSelector((store) => store.pokemones.results);
+  const next = useSelector((store) => store.pokemones.next);
+  const previous = useSelector((store) => store.pokemones.previous);
 
   return (
-    <div>
+    <Container>
       <Typography variant="h3">Pokemon</Typography>
-      <Button
-        className={classes.miButton}
-        variant="contained"
-        endIcon={<Favorite />}
-        onClick={() => dispatch(obtenerPokemonesAccion())}
-      >
-        Get Pokemons
-      </Button>
-      <Typography variant="body1">
-        <ul>
+
+      {pokemones.length === 0 && (
+        <Button
+          className={classes.miButton}
+          variant="contained"
+          endIcon={<Favorite />}
+          onClick={() => dispatch(obtenerPokemonesAccion())}
+        >
+          Get Pokemons
+        </Button>
+      )}
+
+      {previous && (
+        <Button
+          className={classes.miButton}
+          onClick={() => dispatch(anteriorPokemonAccion())}
+        >
+          Anterior
+        </Button>
+      )}
+
+      {next && (
+        <Button
+          className={classes.miButton}
+          onClick={() => dispatch(siguientePokemonAccion())}
+        >
+          Siguiente
+        </Button>
+      )}
+
+      <Typography component="span">
+        <List>
           {pokemones.map((item) => (
-            <li key={item.name}>{item.name}</li>
+            <ListItem key={item.name}>{item.name}</ListItem>
           ))}
-        </ul>
+        </List>
       </Typography>
-    </div>
+    </Container>
   );
 };
 
