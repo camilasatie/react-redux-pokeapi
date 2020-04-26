@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import Detalle from '../components/Detalle';
 import { Typography } from '@material-ui/core';
-import { Container, Button, List, ListItem } from '@material-ui/core';
+import {
+  Box,
+  Container,
+  Button,
+  List,
+  ListItem,
+  Grid,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Favorite from '@material-ui/icons/Favorite';
+import { Favorite, NavigateNext, NavigateBefore } from '@material-ui/icons/';
 
 // hooks react redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +20,7 @@ import {
   obtenerPokemonesAccion,
   siguientePokemonAccion,
   anteriorPokemonAccion,
+  unPokeDetalleAccion,
 } from '../redux/pokeDucks';
 
 // Estilo personalizado do botão
@@ -25,6 +34,13 @@ const useStyle = makeStyles({
     height: 48,
     padding: '0 30px',
   },
+  container: {
+    backgroundColor: '#f8f8f8',
+    height: '100vh',
+  },
+  list: {
+    backgroundColor: '#fff',
+  },
 });
 
 const Pokemones = () => {
@@ -35,46 +51,87 @@ const Pokemones = () => {
   const next = useSelector((store) => store.pokemones.next);
   const previous = useSelector((store) => store.pokemones.previous);
 
+  useEffect(() => {
+    const fetchData = () => {
+      dispatch(obtenerPokemonesAccion());
+    };
+    fetchData();
+  }, [dispatch]);
+
   return (
-    <Container>
+    <Container className={classes.container}>
       <Typography variant="h3">Pokemon</Typography>
 
-      {pokemones.length === 0 && (
-        <Button
-          className={classes.miButton}
-          variant="contained"
-          endIcon={<Favorite />}
-          onClick={() => dispatch(obtenerPokemonesAccion())}
-        >
-          Get Pokemons
-        </Button>
-      )}
+      <Box display="flex" width="100%">
+        <Box p={1} flexGrow={1}>
+          {pokemones.length === 0 && (
+            <Button
+              className={classes.miButton}
+              variant="contained"
+              endIcon={<Favorite />}
+              onClick={() => dispatch(obtenerPokemonesAccion())}
+            >
+              Get Pokemons
+            </Button>
+          )}
 
-      {previous && (
-        <Button
-          className={classes.miButton}
-          onClick={() => dispatch(anteriorPokemonAccion())}
-        >
-          Anterior
-        </Button>
-      )}
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            {previous && (
+              <Button
+                className={classes.miButton}
+                onClick={() => dispatch(anteriorPokemonAccion())}
+              >
+                <NavigateBefore />
+              </Button>
+            )}
 
-      {next && (
-        <Button
-          className={classes.miButton}
-          onClick={() => dispatch(siguientePokemonAccion())}
-        >
-          Siguiente
-        </Button>
-      )}
+            {next && (
+              <Button
+                className={classes.miButton}
+                onClick={() => dispatch(siguientePokemonAccion())}
+              >
+                <NavigateNext />
+              </Button>
+            )}
+          </Grid>
 
-      <Typography component="span">
-        <List>
-          {pokemones.map((item) => (
-            <ListItem key={item.name}>{item.name}</ListItem>
-          ))}
-        </List>
-      </Typography>
+          <Typography component="span">
+            <List>
+              {pokemones.map((item) => (
+                <ListItem
+                  key={item.name}
+                  display="flex"
+                  className={classes.list}
+                >
+                  <Box flexGrow={1}>{item.name}</Box>
+                  <Box>
+                    <Button
+                      size="small"
+                      color="secondary"
+                      onClick={() => dispatch(unPokeDetalleAccion(item.url))}
+                    >
+                      Info
+                    </Button>
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+          </Typography>
+        </Box>
+
+        <Box p={1} flexGrow={1}>
+          <Box pb={2}>
+            <Typography variant="h4">Detalle del Pokemon</Typography>
+          </Box>
+
+          <Detalle />
+        </Box>
+      </Box>
     </Container>
   );
 };
