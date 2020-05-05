@@ -8,8 +8,8 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 function App() {
   return (
     <Router>
+      <Navbar />
       <Switch>
-        <Navbar />
         <Route component={Pokemones} path="/" exact />
         <Route component={Login} path="/login" exact />
       </Switch>

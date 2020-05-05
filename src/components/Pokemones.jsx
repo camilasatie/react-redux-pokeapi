@@ -35,7 +35,6 @@ const useStyle = makeStyles({
     padding: '0 30px',
   },
   container: {
-    backgroundColor: '#f8f8f8',
     height: '100vh',
   },
   list: {
